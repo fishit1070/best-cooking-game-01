@@ -1,0 +1,63 @@
+/* Rush Hour Ramen — cozy night-time ramen shop */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 0%, #3a2a1e 0%, transparent 55%),
+    radial-gradient(90% 70% at 50% 110%, #2b1d14 0%, transparent 60%),
+    linear-gradient(160deg, #241a12 0%, #1c130d 45%, #120c08 100%);
+  color: #f3e6d3;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
+
+canvas#game {
+  display: block;
+  width: min(100vw, 177.78vh);
+  height: min(100vh, 56.25vw);
+  max-width: 100vw;
+  max-height: 100vh;
+  aspect-ratio: 16 / 9;
+  background: #17100b;
+  border-radius: 12px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.65),
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 190, 110, 0.08),
+    0 0 80px rgba(255, 150, 60, 0.07);
+}
+
+noscript {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  text-align: center;
+  white-space: nowrap;
+}
