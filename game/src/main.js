@@ -6,6 +6,7 @@ import { toppingById, noodleById } from './recipes.js';
 import { createRng, makeTicket, tickTicket, scoreServed } from './orders.js';
 import { createKitchen } from './kitchen.js';
 import { drawKitchen, stationRect, ticketRect } from './render.js';
+import { loadArtwork } from './artwork.js';
 import { drawHud, drawTitle, drawResults } from './hud.js';
 import { attachInput, hitTest } from './input.js';
 
@@ -471,11 +472,11 @@ function buildChopScene(shotRng) {
 
 function buildRushScene(shotRng) {
   screen = 'play';
-  tickets = makeDistinctTickets(shotRng, 3, 5);
-  setPatienceFractions([0.5, 0.38, 0.3, 0.22, 0.45]);
+  tickets = makeDistinctTickets(shotRng, 3, 6);
+  setPatienceFractions([0.5, 0.38, 0.3, 0.18, 0.42, 0.24]);
   activeTicketId = tickets[0].id;
 
-  combo = 6;
+  combo = 7;
   comboTimer = 0.8 * COMBO_WINDOW;
 
   const first = tickets[0];
@@ -499,13 +500,14 @@ function buildRushScene(shotRng) {
   }
   startBoardMidChop(rushChopId || 'scallions');
 
-  money = 5120;
-  served = 15;
+  servedFlash = 0.9;
+  money = 6840;
+  served = 19;
   setShotDay(0.78);
   message = 'RUSH HOUR!';
   messageTone = 'good';
   messageTimer = MESSAGE_TIME;
-  cookX = stationCentreX('plating');
+  cookX = stationCentreX('pass');
   cookTargetX = cookX;
 }
 
@@ -547,12 +549,31 @@ if (shotMode) {
 attachInput(canvas, onTap);
 
 let lastTime = null;
+let shotPainted = false;
 function frame(now) {
   if (lastTime === null) lastTime = now;
   const dt = Math.min(0.05, Math.max(0, (now - lastTime) / 1000));
   lastTime = now;
   update(dt);
   render();
+  // Headless screenshot capture waits for this signal: the first complete
+  // frame of a shot scene, rendered only after the paintings have settled
+  // (so the art is actually on the canvas, or its fallback is).
+  if (shotMode && !shotPainted) {
+    shotPainted = true;
+    window.__SHOT_READY = true;
+  }
   requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
+
+// Preload the painted art before the first frame: the render loop starts
+// only once every painting has loaded or failed (failed paintings fall
+// back to the hand-drawn art per slot). A timeout keeps a wedged load
+// from ever blocking the game.
+const ART_WAIT_TIMEOUT_MS = 5000;
+Promise.race([
+  loadArtwork(),
+  new Promise((resolve) => { setTimeout(resolve, ART_WAIT_TIMEOUT_MS); }),
+]).then(() => {
+  requestAnimationFrame(frame);
+});
